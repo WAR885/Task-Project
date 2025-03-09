@@ -28,8 +28,7 @@ public class Plan {
     }
     public void setDate(int year, int month, int day)
     {
-        LocalDate date = LocalDate.of(year, month, day);
-        this.date = date;
+        date = LocalDate.of(year, month, day);
     }
     public void setTimeInHours(double timeInHours)
     {
@@ -43,6 +42,7 @@ public class Plan {
     {
         this.taskName = taskName;
     }
+    @Override
     public String toString()
     {
         int hours = (int)timeInHours;
@@ -57,6 +57,11 @@ public class Plan {
             return String.format("It is yet to be scheduled to do task: %s for a total of %d hours and %.2f minutes",taskName,hours,minutes);
         }
        
+    }
+    public boolean equals(Plan otherPlan)
+    {
+        return (otherPlan.taskName.equals(taskName) && otherPlan.timeInHours == timeInHours && 
+        otherPlan.getDate().equals(date));
     }
     public String condenscedToString()
     {

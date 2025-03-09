@@ -5,15 +5,17 @@ public class Project
     private double totalTime = 0.0;
     private String fileName;
     private Task tasks;
+    @SuppressWarnings("FieldMayBeFinal")
     private ArrayList<Plan> lowestPlans;
     private Scheduler schedule = null;
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public Project(String name, Task tasks, String fileName)
     {
         this.name = name;
         this.totalTime = 0.0;
         this.tasks = tasks;
         this.fileName = fileName;
-        lowestPlans = new ArrayList<Plan>();
+        lowestPlans = new ArrayList<>();
         findlowestTasks();
     }
     public void setName(String name)
@@ -60,6 +62,7 @@ public class Project
     {
         schedule = new Scheduler(startYear,startMonth,startDay,endYear,endMonth,endDay,lowestPlans);
     }
+    @Override
     public String toString()
     {
         String output = String.format("Project Name: %s %nTotal Time in Hours: %s %n",name,totalTime);
@@ -87,7 +90,6 @@ public class Project
                 
             }
         }
-        t = null;
     }
     public void findlowestTasks()
     {
@@ -128,5 +130,19 @@ public class Project
                 break;
             }
         }
+    }
+    public boolean equals(Project otherProject)
+    {
+        return (name.equals(otherProject.getName()) && compareTasks(otherProject) && 
+        fileName.equals(otherProject.getFileName()));
+    }
+    private boolean compareTasks(Project otherProject)
+    {
+        Task otherTask = otherProject.getTasks();
+        if(otherTask == null)
+        {
+            return (tasks == null);
+        }
+        return otherTask.equals(tasks);
     }
 }

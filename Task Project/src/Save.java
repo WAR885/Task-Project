@@ -11,10 +11,9 @@ public class Save {
     static Project readInFile(String fileName)
     {
         Project theProject = new Project("", null, fileName);
-        try
+        try(BufferedReader file = new BufferedReader(new FileReader(fileName)))
         {
-            BufferedReader file = new BufferedReader(new FileReader(fileName));
-            ArrayList<String> allLines = new ArrayList<String>();
+            ArrayList<String> allLines = new ArrayList<>();
             while(file.read()!=-1)
             {
                 allLines.add("[" + file.readLine());
@@ -30,7 +29,7 @@ public class Save {
                 {
                     allLines.set(j,allLines.get(j).substring(1,allLines.get(j).length()-1));
                     String[] info = allLines.get(j).split(",");
-                    Task t = new Task(new ArrayList<Task>(),null,info[0],info[2]);
+                    Task t = new Task(null,info[0],info[2]);
                     t.setTimeInHours(Double.parseDouble(info[3]));
                     if(info[1].equals("NULL"))
                     {
@@ -103,29 +102,27 @@ public class Save {
                 }
             }
             theProject.findlowestTasks();
-            file.close();
         }
         catch(FileNotFoundException flne)
         {
             System.out.println("Sorry, the file was not found");
-            System.out.println(flne.getStackTrace());
-            theProject =  null;
+            theProject = new Project("ERRORCODE455444rrr4r4e33e", null, fileName);
+            //flne.printStackTrace();
         }
         catch(IOException io)
         {
             System.out.println("Sorry, an error occured while opening the file");
-            System.out.println(io.getStackTrace());
+            theProject = new Project("ERRORCODE455444rrr4r4e33e", null, fileName);
+            //io.printStackTrace();
         }
         return theProject;
-
     }
     static void writeInFile(Project theProject)
     {
-        try
+        try(BufferedWriter file = new BufferedWriter(new FileWriter((theProject.getFileName()))))
         {
             File createFile = new File(theProject.getFileName());
             createFile.createNewFile();
-            BufferedWriter file = new BufferedWriter(new FileWriter((theProject.getFileName())));
             String projectStr = String.format("[%s,%.2f]%n",theProject.getName(),theProject.getTotalTime());
             projectStr += theProject.getTasks().toStringCondensced(projectStr,theProject.getTasks());
             if(theProject.getSchedule() != null)
@@ -133,12 +130,11 @@ public class Save {
                 projectStr+=(theProject.getSchedule().condenscedToString());
             }
             file.write(projectStr);
-            file.close();
         }
         catch(IOException e)
         {
             System.out.println("Sorry, an error occured while saving your work");
-            System.out.println(e.getStackTrace());
+            e.printStackTrace();
         }
 
     }

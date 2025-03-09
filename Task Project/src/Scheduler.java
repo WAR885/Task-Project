@@ -2,21 +2,26 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 public class Scheduler 
 {
+    @SuppressWarnings("FieldMayBeFinal")
     private LocalDate startDate;
+    @SuppressWarnings("FieldMayBeFinal")
     private LocalDate endDate;
+    @SuppressWarnings("FieldMayBeFinal")
     private ArrayList<LocalDate> diff;
     private ArrayList<LocalDate> dates;
+    @SuppressWarnings("FieldMayBeFinal")
     private ArrayList<Plan> allocatedPlans;
+    @SuppressWarnings("FieldMayBeFinal")
     private ArrayList<Plan> unallocatedPlans;
     public Scheduler(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, ArrayList<Plan> plans)
     {
         startDate = LocalDate.of(startYear, startMonth, startDay);
         endDate = LocalDate.of(endYear, endMonth, endDay);
-        this.diff = new ArrayList<LocalDate>();
-        this.dates = new ArrayList<LocalDate>();
+        this.diff = new ArrayList<>();
+        this.dates = new ArrayList<>();
         calculateDifference();
-        this.allocatedPlans = new ArrayList<Plan>();
-        this.unallocatedPlans = new ArrayList<Plan>();
+        this.allocatedPlans = new ArrayList<>();
+        this.unallocatedPlans = new ArrayList<>();
         for(Plan plan : plans)
         {
             unallocatedPlans.add(plan);
@@ -58,7 +63,7 @@ public class Scheduler
     }
     public void reset()
     {
-        dates = new ArrayList<LocalDate>();
+        dates = new ArrayList<>();
         for(LocalDate date : diff)
         {
             dates.add(date);
@@ -174,7 +179,6 @@ public class Scheduler
             }
         }
         System.out.println("Date was not found");
-        return;
     }
     public void deletePlan(Plan plan)
     {
@@ -198,7 +202,7 @@ public class Scheduler
     }
     public void scheduleTimes()
     {
-        if(allocatedPlans.size() != 0)
+        if(!allocatedPlans.isEmpty())
         {
             unallocateDates();
         }
@@ -212,14 +216,14 @@ public class Scheduler
         double currTime = averageTime;
         double timeForTask = unallocatedPlans.get(0).getTimeInHours();
         String taskName = unallocatedPlans.get(0).getTaskName();
-        for(int k = 0; k < dates.size() && 0 < unallocatedPlans.size();)
+        for(int k = 0; k < dates.size() && !unallocatedPlans.isEmpty();)
         {   
             if(currTime > timeForTask)
             {
                 allocatedPlans.add(new Plan(dates.get(k),timeForTask,taskName));
                 currTime-=timeForTask;
                 unallocatedPlans.remove(0);
-                if(0 < unallocatedPlans.size() && k < dates.size())
+                if(!unallocatedPlans.isEmpty() && k < dates.size())
                 {
                     timeForTask = unallocatedPlans.get(0).getTimeInHours();
                     taskName = unallocatedPlans.get(0).getTaskName();
@@ -230,7 +234,7 @@ public class Scheduler
                 allocatedPlans.add(new Plan(dates.get(k),currTime,taskName));
                 timeForTask-=currTime;
                 k++;
-                if(0 < unallocatedPlans.size() && k < dates.size())
+                if(!unallocatedPlans.isEmpty() && k < dates.size())
                 {
                     currTime = averageTime;
                 }
@@ -240,7 +244,7 @@ public class Scheduler
                 allocatedPlans.add(new Plan(dates.get(k),currTime,taskName));
                 k++;
                 unallocatedPlans.remove(0);
-                if(0 < unallocatedPlans.size() && k < dates.size())
+                if(!unallocatedPlans.isEmpty() && k < dates.size())
                 {
                     timeForTask = unallocatedPlans.get(0).getTimeInHours();
                     taskName = unallocatedPlans.get(0).getTaskName();
@@ -249,6 +253,7 @@ public class Scheduler
             }
         }
     }
+    @Override
     public String toString()
     {
         String s = "Scheduled Plans: \n";
@@ -257,7 +262,7 @@ public class Scheduler
             s += p.toString() + "\n";
         }
         s+="\n";
-        if(unallocatedPlans.size() != 0)
+        if(!unallocatedPlans.isEmpty())
         {
             s+="Unscheduled Plans: \n";
             for(Plan u : unallocatedPlans)
@@ -266,6 +271,10 @@ public class Scheduler
             }
         }
         return s;
+    }
+    public boolean equals(Scheduler otherScheduler)
+    {
+        return (otherScheduler == null || toString().equals(otherScheduler.toString()));
     }
     public String condenscedToString()
     {
@@ -280,8 +289,10 @@ public class Scheduler
         for(int i = 0; i < unallocatedPlans.size(); i++)
         {
             if(i % 100 == 0)
+            {
                 output += "\n";
                 output += unallocatedPlans.get(i) + "|";
+            }
         }
         return output;
     }

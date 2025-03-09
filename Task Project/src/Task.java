@@ -2,14 +2,13 @@ import java.util.ArrayList;
 
 public class Task 
 {
-    private ArrayList<Task> subTasks;
+    private ArrayList<Task> subTasks = new ArrayList<>();
     private Task superTask;
     private String title;
     private String description;
     private double timeInHours = 0.0;
-    public Task(ArrayList<Task> subTasks, Task superTask, String title, String description, double timeInHours)
+    public Task(Task superTask, String title, String description, double timeInHours)
     {
-        this.subTasks = subTasks;
         this.superTask = superTask;
         this.title = title;
         this.description = description;
@@ -17,9 +16,8 @@ public class Task
         if(superTask != null)
             superTask.addTimeInHours(timeInHours);
     }
-    public Task(ArrayList<Task> subTasks, Task superTask, String title, String description)
+    public Task(Task superTask, String title, String description)
     {
-        this.subTasks = subTasks;
         this.superTask = superTask;
         this.title = title;
         this.description = description;
@@ -110,6 +108,7 @@ public class Task
             superTask.addTimeInHours(timeInHours);
         }
     }
+    @Override
     public String toString()
     {
         String output = "";
@@ -130,10 +129,10 @@ public class Task
     {
         output+=indent+"*"+task.getTitle()+"\n";
         indent+="  ";
-        ArrayList<Task> subTasks = task.getSubTasks();
+        ArrayList<Task> sTasks = task.getSubTasks();
         for(int i = 0; i < task.getSubTaskSize(); i++)
         {
-            output+=traverseTree(subTasks.get(i),"",indent);
+            output+=traverseTree(sTasks.get(i),"",indent);
         }
         return output;
     }
@@ -155,7 +154,7 @@ public class Task
     {
         if(task != null)
         {
-            String superTitle = "";
+            String superTitle;
             if(task.getSuperTask() == null)
             {
                 superTitle = "NULL";
@@ -186,12 +185,12 @@ public class Task
     }
     public void removeTask(Task task)
     {
-        Task superTask = task.getSuperTask();
-        for(int i = 0; i < superTask.getSubTaskSize(); i++)
+        Task sTask = task.getSuperTask();
+        for(int i = 0; i < sTask.getSubTaskSize(); i++)
         {
-            if(superTask.getSubTask(i).getTitle().equals(superTask.getTitle()))
+            if(sTask.getSubTask(i).getTitle().equals(task.getTitle()))
             {
-                superTask.removeSubTask(i);
+                sTask.removeSubTask(i);
                 return;
             }
         }
@@ -207,5 +206,29 @@ public class Task
             findLowestTasks(t.getSubTask(j), plans);
         }
         return plans;
+    }
+    public boolean equals(Task otherTask)
+    {
+        return (otherTask.getTitle().equals(title) && otherTask.compare(this) && 
+        otherTask.getDescription().equals(description) && otherTask.getTimeInHours() == timeInHours);
+    }
+    private boolean compare(Task otherTask)
+    {
+        if(otherTask.getSubTasks() == null || otherTask.getSubTasks().isEmpty())
+        {
+            return (subTasks == null || subTasks.isEmpty());
+        }
+        ArrayList<Task> otherSub = otherTask.getSubTasks();
+        if(otherSub.size() != subTasks.size())
+        {
+            return false;
+        }
+        for(int i = 0; i < otherSub.size(); i++)
+        {
+            if(!otherSub.get(i).equals(subTasks.get(i)))
+                return false;
+        }
+        return true;
+
     }
 }
